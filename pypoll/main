@@ -1,0 +1,89 @@
+#pybank code
+
+#reading python code in
+import os
+import csv
+#creating generic path to work between mac and windows
+csvpath = os.path.join('..','pypoll','election_data.csv')
+
+
+#making each line of csv data into a new row
+with open(csvpath,newline = '') as csvfile:
+    #dictReader reads it as a dictionary
+    csvreader = csv.DictReader(csvfile)
+
+#making variables and lists needed later
+    candidate_names = []
+    total_votes = 0
+    votes_by_candidate = 0
+    percentage_votes = 0.0
+    votes_correy = 0
+    votes_tooley = 0
+    votes_li = 0
+    votes_khan = 0
+    candidate_votes = {}
+
+
+    for row in csvreader:
+        #getting number of rows
+        total_votes = total_votes + 1
+
+        #creating candidate names
+
+        #creating total votes by candidate and percentages
+        if row['Candidate'] == 'Correy':
+            votes_correy = votes_correy + 1
+            percentage_correy = (votes_correy/total_votes)
+        elif row['Candidate'] == "O'Tooley":
+                votes_tooley = votes_tooley + 1
+                percentage_tooley = (votes_tooley/total_votes)
+        elif row['Candidate'] == "Khan":
+                votes_khan = votes_khan + 1
+                percentage_khan = (votes_khan/total_votes)
+        elif row['Candidate'] == "Li":
+                votes_li = votes_li + 1
+                percentage_li = (votes_li/total_votes)
+
+        #tutor helped with this, creating a list with names and votes
+        if row["Candidate"] not in candidate_names:
+            candidate_names.append(row['Candidate'])
+            candidate_votes[row["Candidate"]] = 0
+        candidate_votes[row["Candidate"]]+=1
+
+print(candidate_votes)
+#creating winning decision tree
+if percentage_khan > percentage_li and percentage_correy and percentage_tooley:
+    winner = "Khan"
+elif percentage_correy > percentage_li and percentage_khan and percentage_tooley:
+    winner = "Correy"
+elif percentage_li > percentage_khan and percentage_tooley and percentage_correy:
+    winner = "Li"
+elif percentage_tooley > percentage_khan and percentage_tooley and percentage_correy:
+    winner = "O'Tooley"
+
+#printing to terminal
+print("Election Results")
+print("-----------------")
+print("Total Voters: " + str(total_votes))
+print("-----------------")
+#print("List of Candidates: " + unique_names)
+print("Khan: " + "{:.3%}".format(percentage_khan))
+print("Correy: " + "{:.3%}".format(percentage_correy))
+print("Li: " + "{:.3%}".format(percentage_li))
+print("O'Tooley: " + "{:.3%}".format(percentage_tooley))
+print("-----------------")
+print("Winner: " + winner)
+
+#printing results
+results = open('Voting_results', 'wt')
+print("Election Results", file = results)
+print("-----------------", file = results)
+print("Total Voters: " + str(total_votes), file = results)
+print("-----------------", file = results)
+print("Khan: " + "{:.3%}".format(percentage_khan), file = results)
+print("Correy: " + "{:.3%}".format(percentage_correy), file = results)
+print("Li: " + "{:.3%}".format(percentage_li), file = results)
+print("O'Tooley: " + "{:.3%}".format(percentage_tooley), file = results)
+print("-----------------", file = results)
+print("Winner: " + winner, file = results)
+results.close()

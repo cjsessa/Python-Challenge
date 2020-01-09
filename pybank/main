@@ -1,0 +1,76 @@
+#pybank code
+
+#reading python code in
+import os
+import csv
+import sys
+
+
+#creating generic path to work between mac and windows
+csvpath = os.path.join('..','pybank','budget_data.csv')
+
+#making each line of csv data into a new row
+with open(csvpath,newline = '') as csvfile:
+    #dictReader reads it as a dictionary
+    csvreader = csv.DictReader(csvfile)
+
+    #creating variables for later
+    total_months = 0
+    revenue_list = []
+    revenue_date = []
+    net_profit = 0
+    prev_rev = 0
+    total_change = 0
+    max_profit = {'Date',0.0}
+    min_profit = {'Date',9999999999999}
+
+    for row in csvreader:
+        #adding all the months together
+        total_months = total_months + 1
+
+        #creating revenue list to find min and max_profit
+        #creating variable Change
+        if prev_rev != 0:
+            change = float(row['Profit/Losses'])-prev_rev
+            revenue_list.append(change)
+
+            revenue_date.append(row['Date'])
+
+
+        #finding the net total of profit loss, by adding each profit line to the next
+        net_profit += float(row['Profit/Losses'])
+        #finding total change by subtracting the profit from the previous revenue
+        total_change += (float(row['Profit/Losses'])-prev_rev)
+        #previous revenue is eaqual to the current line
+        prev_rev = float(row['Profit/Losses'])
+
+#getting max and min
+#max revenue
+max_profit = max(revenue_list)
+#index of max revenue
+revenue_list.index(max_profit)
+#using index from above to find date
+max_profit_date = revenue_date[(revenue_list.index(max_profit))]
+
+#doing same for min
+min_profit = min(revenue_list)
+revenue_list.index(min_profit)
+min_profit_date = revenue_date[(revenue_list.index(min_profit))]
+
+average_change = sum(revenue_list) / len(revenue_list)
+
+#printing results to terminal
+print("Total Months: " + str(total_months))
+print("Total Profit: " + str(net_profit))
+print("Average Change: " + "${:,.2f}".format(average_change))
+print("Largest Increase: " + str(max_profit_date )+ " |" + str(max_profit))
+print("Largest Decrease: " + str(min_profit_date) + " |" + str(min_profit))
+
+#printing results to text file
+budget_data = open("budget_results","wt")
+print("Total Months: " + str(total_months),file = budget_data)
+print("Total Profit: " + str(net_profit), file = budget_data)
+print("Average Change: " + "${:,.2f}".format(average_change),file = budget_data)
+print("Largest Increase: " + str(max_profit_date )+ " |" + str(max_profit),file = budget_data)
+print("Largest Decrease: " + str(min_profit_date) + " |" + str(min_profit), file = budget_data)
+budget_data.close()
